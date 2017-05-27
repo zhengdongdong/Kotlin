@@ -1,0 +1,5 @@
+1.android studio -> setting -> plugin  下载 kotlin 插件
+
+2.创建项目后打开 activity, 按 Ctrl + Shift + A -> convert java file to kotlin 文件转为 kotlin(或者上面的Code->convert java file to kotlin)
+
+3.点击 configure -> Android with Gradle  配置 modules 使用 kotlin 语言, 这时会在 gradle 文件中添加 apply plugin: 'kotlin-android' , 重新生成下, 会自动下载插件

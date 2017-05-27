@@ -1,0 +1,332 @@
+//region /***********基本类型/运算***********/
+/**
+ * 类型
+ * Double       64     123.5, 123.5e10
+ * Float        32     123.5F
+ * Long         64     123L
+ * Int          32     123
+ * Short        16
+ * Byte         8
+ * Char         不能直接当做数字: c==1 错误
+ * Boolean      true/false
+ * String       和java差不多
+ *
+ * 十六进制    0x0f
+ * 二进制      0b00001011
+ * (不支持八进制)
+ *
+ */
+
+// 较小的变量不能隐式转换为较大的类型
+// val short: Short = 1
+// val int: Int = short // 错误
+// val int: Int = short.toInt() // 正确
+
+/**
+ * 数组
+ * Array
+ *
+ * // 创建一个Array<String> 初始化为 ["0" , "1" , "4" , "9" , "16"]
+ * val arr1 = Array(5, { i -> (i * i).toString() )})
+ * val arr2 = arrayOf(1,2,3)
+ * val arr3 = arrayOfNulls()  // 创建一个指定大小,元素都为空的数组
+ *
+ * String b = x[0];
+ *
+ * 另外还有 ByteArray, ShortArray, IntArray 等, 这些和 Array 没有继承关系, 但有同样的方法属性集
+ *
+ */
+
+/**
+ * 位运算
+ * shl     --     有符号左移(Java: <<)
+ * shr     --     有符号右移(Java: >>)
+ * ushr    --     无符号右移(Java: >>>)
+ * and     --     位与
+ * or      --     位或
+ * xor     --     位异或
+ * inv     --     位非
+ */
+
+//endregion
+
+//region /***********局部变量***********/
+// *******一次赋值(只读)的局部变量
+// 标准写法
+val c: Int = 3
+// 自动判断类型
+val c1 = 3
+// 如果没有初始值类型不能省略
+val c2: Int
+// 明确赋值
+c2 = 3
+// 错误 已赋值不可重新赋值
+// c2 = 4;
+
+// *******可变变量
+// 自动识别
+var a = 5;
+a += 4;
+// a += "cc"; // 错误 初始化时已确定类型
+var s: String
+s = "aa"
+
+// *******可空值: 当某个变量的值可以为 null 的时候，必须在声明处的类型后添加 ? 来标识该引用可为空。
+var i1: Int?;
+i1 = s.toIntOrNull()
+println(i1);
+
+if (i1 != null) {
+    println("i1 is num : $i1")
+} else {
+    println("i1 not num : $i1")
+}
+
+// *******类型判断 is
+if (i1 is Int) {
+    println("i1 is Int");
+} else {
+    if (i1 is Int?) {
+        println("i1 is Int?")
+    } else {
+        println("i1 not Int")
+    }
+}
+
+//endregion
+
+//region /***********条件/循环***********/
+val items1 = listOf("apple", "banana", "kiwi");
+
+// for
+for (item in items1) {
+    // ...
+}
+
+// while
+var index = 0;
+while (index < items1.size) {
+    // ... items1[index]
+    index++;
+}
+
+// when  匹配一个就跳出
+when (index) {
+    1, 2 -> "aa"  // 多个条件用逗号分隔
+    2 -> "bb"
+    4 -> println("cc")
+    in 1..2 -> "ss"
+    !in 2..3 -> "dd"
+    is Int -> println("int")
+    !is Int -> println("!int")
+    else -> "unknown"  // 相当于 default
+}
+
+// range
+var i = 0;
+if (i in 1..10) { // 等同于 i >= 1 && i <= 10
+    // .. break
+    // ,, continue
+}
+for (i in 1..4) { // 等同于 for(i = 1; i <= 4; i++)
+
+}
+for (i in 4 downTo 1) { // 等同于 for(i = 4; i <= 1; i++)
+
+}
+for (i in 1..4 step 2) { // 一次跳2步
+
+}
+for (i in 1 until 10) { // 相当于 for( i = 1; i < 10; i++)
+
+}
+
+//endregion
+
+//region /***********集合***********/
+// list
+var items2 = listOf("apple", "banana", "kiwi")
+// set
+var items3 = setOf("BMW", "POCHE")
+// map
+var items4 = mapOf("a" to 2, "b" to 3, "c" to 4); // 访问 items4["a"]
+for (item in items2) {
+    // ...
+}
+
+// 判断集合是否包含.. in
+when {
+    "apple" in items2 -> println("has Apple")
+    "bananaa" in items2 -> println("has Bananaa")
+}
+
+// lambda 过滤/映射
+items2
+        .filter { it.startsWith("b") }
+        .sortedBy { it }
+        .map { it.toUpperCase() }
+        .forEach { println(it) }
+
+//endregion
+
+//region /***********方法***********/
+// 方法: 包含两个 Int 类型的参数, 返回类型为 Int
+fun sum1(a: Int, b: Int): Int {
+    return a + b;
+}
+
+// 表达式作为函数体 -- 自动推测返回类型
+fun sum2(a: Int, b: Int) = a + b;
+
+// 表达式作为函数体 -- 指定返回类型
+fun sum3(a: Int, b: Int): Int = a + b;
+
+// 返回无意义的值(:Unit 可不写)(类似java void)
+fun printSum1(a: Int, b: Int): Unit {
+    println("a is $a, b is $b, a + b is ${a + b}");
+}
+
+// 可空值
+fun parseInt(str: String): Int? {
+    return str.toIntOrNull()
+}
+
+// 函数默认参数
+fun foo(a: Int = 0, b: String = "") {
+
+}
+
+println("sum1:${sum1(1, 2)}")
+println("sum2:${sum2(1, 2)}")
+println("sum3:${sum3(1, 2)}")
+printSum1(1, 2);
+
+//endregion
+
+//region /***********类***********/
+// 空类
+class Empty
+
+// 类
+class Test {}
+
+//region ********构造函数
+// 构造函数  -- 可有一个主构造函数和一个或多个次构造函数
+// 主构造函数: 跟在类名(和可选类型参数)后,
+class Test0 constructor(name: String) { // class Test (name:String)
+    // 初始化块, 用于初始化数据
+    init {
+        // init
+    }
+}
+
+// 如果主构造函数没有任何注解或可见性修饰符, constructor 可省略
+// 构造函数也可以声明为可变的(var)/不可变的(val)
+class Test1 public constructor(val name: String) {
+
+}
+
+// 次构造函数
+class Test3 {
+    constructor(name: String) {
+
+    }
+}
+
+// 主次都有, 需要在次构造函数中委托给主构造函数
+class Test4(name: String) {
+    constructor(name2: String, age: Int) : this(name2) {
+
+    }
+}
+
+// 私有构造函数
+class Test5 private constructor() {
+
+}
+//endregion
+
+// *********创建类实例
+// 像调用函数一样, 没有 new 关键字
+val test = Test()
+val test1 = Test1("name")
+
+//region *********继承
+// kotlin 所有类都有一个共同的超类 Any, Any 和 Object 不一样, 除了 equals(), hasCode(), toString() 外没有任何成员
+
+// 声明一个显示的超类, open 表示类可以继承/覆盖, kotlin 中类默认为 final, 不可继承
+open class Person(age: Int) {
+    open val a: Int = 1;
+    open val c: Int = 1;
+    open var b: Int = 2;
+    open fun v() {
+    }
+
+    fun nv() {
+    }
+}
+
+// 继承一个超类, 若超类存在主构造函数, 必须用基类主构造函数就地初始化
+class Man(age: Int) : Person(age) {
+    // 覆盖属性
+    override val c: Int = 2;
+    override var a: Int = 3;  // 正确, 可以var 覆盖val, 因为val本质 只是声明了getter, 覆盖后子类中额外声明了一个setter
+    // override val b:Int = 4; 错误, 不能val 覆盖var
+    override var b: Int = 5;
+
+    // 覆盖方法, 如果不想其子类再覆盖, final override fun v(){}
+    override fun v() {
+    }
+
+    // override fun nv() {} 不可被覆盖
+}
+
+// 如果没有主构造函数, 需要对次构造函数使用 super 初始化基类构造函数
+class MyView : View {
+    constructor(ctx: Context) : super(ctx)
+
+    constructor(ctx: Context, attrs: AttributeSet) : super(ctx, attrs)
+}
+
+// 覆盖规则
+class Child(age: Int) : Person(age), Action {
+    override fun v() {
+        super<Person>.v() // 调用 Person 的 v
+        super<Action>.v() // 调用 Action 的 v
+    }
+}
+//endregion
+
+// *********抽象类
+open class Base {
+    open fun f() {
+
+    }
+}
+
+abstract class Chou : Base() {
+    abstract fun a() // 抽象类抽象方法没有方法体
+    override abstract fun f() // 抽象类可覆盖非抽象公开方法
+    fun c() { // 非抽象方法必须有方法体
+
+    }
+}
+
+class C : Chou() { // 继承自抽象类, 必须覆盖抽象方法
+    override fun a() {
+
+    }
+
+    override fun f() {
+
+    }
+}
+
+
+interface Action {
+    // 接口中函数默认为 open
+    fun v() {
+    };
+}
+
+//endregion
