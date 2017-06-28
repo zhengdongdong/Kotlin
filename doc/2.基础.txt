@@ -176,14 +176,14 @@ fun sum1(a: Int, b: Int): Int {
 }
 
 // 表达式作为函数体 -- 自动推测返回类型
-fun sum2(a: Int, b: Int) = a + b;
+fun sum2(a: Int, b: Int) = a + b
 
 // 表达式作为函数体 -- 指定返回类型
-fun sum3(a: Int, b: Int): Int = a + b;
+fun sum3(a: Int, b: Int): Int = a + b
 
 // 返回无意义的值(:Unit 可不写)(类似java void)
 fun printSum1(a: Int, b: Int): Unit {
-    println("a is $a, b is $b, a + b is ${a + b}");
+    println("a is $a, b is $b, a + b is ${a + b}")
 }
 
 // 可空值
@@ -199,7 +199,7 @@ fun foo(a: Int = 0, b: String = "") {
 println("sum1:${sum1(1, 2)}")
 println("sum2:${sum2(1, 2)}")
 println("sum3:${sum3(1, 2)}")
-printSum1(1, 2);
+printSum1(1, 2)
 
 //endregion
 
@@ -256,9 +256,9 @@ val test1 = Test1("name")
 
 // 声明一个显示的超类, open 表示类可以继承/覆盖, kotlin 中类默认为 final, 不可继承
 open class Person(age: Int) {
-    open val a: Int = 1;
-    open val c: Int = 1;
-    open var b: Int = 2;
+    open val a: Int = 1
+    open val c: Int = 1
+    open var b: Int = 2
     open fun v() {
     }
 
@@ -269,10 +269,10 @@ open class Person(age: Int) {
 // 继承一个超类, 若超类存在主构造函数, 必须用基类主构造函数就地初始化
 class Man(age: Int) : Person(age) {
     // 覆盖属性
-    override val c: Int = 2;
-    override var a: Int = 3;  // 正确, 可以var 覆盖val, 因为val本质 只是声明了getter, 覆盖后子类中额外声明了一个setter
-    // override val b:Int = 4; 错误, 不能val 覆盖var
-    override var b: Int = 5;
+    override val c: Int = 2
+    override var a: Int = 3  // 正确, 可以var 覆盖val, 因为val本质 只是声明了getter, 覆盖后子类中额外声明了一个setter
+    // override val b:Int = 4 错误, 不能val 覆盖var
+    override var b: Int = 5
 
     // 覆盖方法, 如果不想其子类再覆盖, final override fun v(){}
     override fun v() {
@@ -326,7 +326,197 @@ class C : Chou() { // 继承自抽象类, 必须覆盖抽象方法
 interface Action {
     // 接口中函数默认为 open
     fun v() {
-    };
+    }
 }
 
 //endregion
+
+
+// region*********属性字段
+class Pro {
+    // get set
+    var c: Int
+        get() = c
+        set(value) {
+            this.c = value
+        }
+    // 使用幕后字段 必须初始化
+    var d: Int = 4
+        get() = field
+        set(value) {
+            field = value
+        }
+    // init 不能设置时, 不能同时设置 set 和 get
+    var name: String = "zz"
+        get() = name
+    var age: Int = 2
+        set(value) {
+            this.age = value
+        }
+}
+// endregion
+
+// region*********接口
+interface Inter1 {
+    fun foo() {
+
+    }
+
+    fun fee()
+}
+
+interface Inter2 {
+    fun foo() {
+
+    }
+
+    fun fee1()
+}
+
+class Cls : Inter1, Inter2 {
+    override fun foo() {
+        // 解决覆盖冲突
+        super<Inter1>.foo()
+        super<Inter2>.foo()
+    }
+
+    override fun fee() {
+
+    }
+
+    override fun fee1() {
+
+    }
+}
+// endregion
+
+// region*********扩展函数
+// 多数情况下, 扩展会直接在包内定义
+// 如
+// package foo.b
+// fun Baz.goo(){ .... }
+// 使用时:  import foo.b.goo  或  import foo.b.*
+
+
+var c = C()
+c.print() // 扩展函数和类函数一样, 执行类函数
+c.print("aaaa") // 扩展函数为类函数重载, 执行重载函数
+
+class C {
+    fun print() {
+        Log.e("MainActivity", "C")
+    }
+}
+
+// 给类 C 添加扩展函数, 若函数一样, 执行类里面的内容
+fun C.print() {
+    Log.e("MainActivity", "out")
+}
+
+// 给类 C 添加扩展函数, 函数重载
+fun C.print(msg: String) {
+    Log.e("MainActivity", "out " + msg)
+}
+
+// 扩展定义为类成员
+class D {
+    fun C.print() {
+        toString() // 使用C的 toString
+        this@D.toString() // 使用D的 toString
+    }
+}
+
+// endregion
+
+
+// region*********数据类
+// 数据类是只保存数据的类
+// 特征 :
+// -- 主构造函数至少有一个参数
+// -- 所有参数需要标记为 var/val
+// -- 数据类不能是抽象, 开放, 密封或内部的
+// 数据类默认输出以下成员
+// -- equals()/hashCode() 对，
+// -- toString() 格式是 "User(name=John, age=42)"，
+// -- componentN() 函数 按声明顺序对应于所有属性，
+// -- copy() 函数
+data class User(val name: String, val age: Int)
+
+// 使用
+val jack = User(name = "jack", age = 1)
+// 复制
+val cpJack = jack.copy()
+val cpJack1 = jack.copy(age = 2)
+
+// 解构 数据类
+// 实质是下面两条
+// val n = jack.component1()
+// val a = jack.component2()
+val (name, age) = jack
+log("name : $name , age : $age")
+
+// endregion
+
+// region*********嵌套/内部类
+
+val b = A.B()
+val d = C().D()
+
+// 嵌套类
+class A {
+class B
+}
+
+// 内部类
+class C {
+inner class D
+}
+
+// endregion
+
+
+// region*********枚举类
+enum class Direct {
+    NORTH, SOUTH, WEST, EAST
+}
+
+// 已初始化
+enum class Col(val rgb: Int) {
+    RED(0xFF0000),
+    GREEN(0x00FF00),
+    BLUE(0x0000FF)
+}
+
+// endregion
+
+// region*********匿名对象
+fun foo() {
+    // 匿名对象
+    val point = object {
+        var x: Int = 1
+        var y: Int = 2
+    }
+
+    log("point x is ${point.x} , y is ${point.y}")
+}
+
+// 匿名对象只作用于本地和私有作用域中声明的对象
+class C {
+    // 私有函数, 所以其返回类型是匿名对象类型
+    private fun foo() = object {
+        val x: String = "x"
+    }
+
+    // 公有函数, 所以其返回类型是Any
+    fun publicFoo() = object {
+        val x: String = "y"
+    }
+
+    fun bar() {
+        val x1 = foo().x
+        // val x2 = publicFoo().x 错误
+        Log.e("MainActivity", foo().toString())
+        Log.e("MainActivity", publicFoo().toString())
+    }
+}
+// endregion
